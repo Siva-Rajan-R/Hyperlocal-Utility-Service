@@ -130,11 +130,11 @@ class CustomFieldsRepo(BaseRepoModel):
         if not is_field_exists:
             return False
         fields=is_field_exists['fields']
+        ic(fields)
         if data.field_name not in fields:
             return False
         
-        fields[data.field_name]['label_name']=data.label_name
-        fields[data.field_name]['required']=data.required
+        fields[data.field_name]={**fields[data.field_name],**data.fields}
 
         field_toupdate=update(
             CustomFields

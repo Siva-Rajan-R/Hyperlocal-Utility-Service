@@ -8,6 +8,7 @@ from core.configs.settings_config import SETTINGS
 from hyperlocal_platform.core.enums.environment_enum import EnvironmentEnum
 import os,asyncio
 from hyperlocal_platform.infras.saga.main import init_infra_db
+from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
 
@@ -44,6 +45,14 @@ app=FastAPI(
     docs_url=docs_url,
     redoc_url=redoc_url,
     lifespan=utility_service_lifespan
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
