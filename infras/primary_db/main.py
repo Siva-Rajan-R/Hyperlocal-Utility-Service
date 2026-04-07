@@ -1,0 +1,27 @@
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from core.configs.settings_config import SETTINGS
+from icecream import ic
+
+
+ENGINE=create_async_engine(SETTINGS.PG_DATABASE_URL,echo=False)
+
+BASE=declarative_base()
+
+
+AsyncUtilisLocalSession=async_sessionmaker(ENGINE,class_=AsyncSession,expire_on_commit=False)
+
+async def init_utilis_pg_db():
+    try:
+        ic("initializing pg db...")
+        async with ENGINE.connect() as conn:
+            await conn.run_sync(BASE.metadata.create_all)
+            await conn.commit()
+        ic("...Databse initialized successfully...")
+    except Exception as e:
+        ic(f"Error : initializing pg db => {e}")
+
+
+async def get_pg_async_session():
+    async with AsyncUtilisLocalSession() as Session:
+        yield Session

@@ -1,0 +1,7 @@
+FIELDS-COLUMNS =>id, serive_name, fields
+
+FIELDS => BASE FIELDS, CUSTOM FIELDS INC (SHOP_ID)
+
+FIELDS => {field_name:{label_name, field_name, type, dd_id[Optional]}}
+
+DROPDOWNS => id, values

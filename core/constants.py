@@ -1,0 +1,2 @@
+ENV_PREFIX="UTILS_"
+SERVICE_NAME='utils'

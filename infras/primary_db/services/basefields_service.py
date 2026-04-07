@@ -1,0 +1,76 @@
+from ..models.base_fields import BaseFields
+from sqlalchemy import select,update,delete,and_,or_
+from sqlalchemy.ext.asyncio import AsyncSession
+from models.service_models.base_service_model import BaseServiceModel
+from hyperlocal_platform.core.decorators.db_session_handler_dec import start_db_transaction
+from schemas.v1.request_schemas.fields_schema import CreateBaseFieldSchema,UpdateBaseFieldSchema
+from schemas.v1.db_schemas.fields_schema import CreateBaseFieldDbSchema,UpdateBaseFieldSDbSchema
+from ..repos.basefields_repo import BaseFieldsRepo
+from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
+from icecream import ic
+
+
+class BaseFieldsService(BaseServiceModel):
+    def __init__(self, session:AsyncSession):
+        self.session=session
+
+    @start_db_transaction
+    async def create(self,data:CreateBaseFieldSchema):
+        converted_fields={}
+        for field in data.fields:
+            converted_fields[field.field_name]={**field.model_dump(mode='json')}
+
+        if len(converted_fields)!=len(data.fields):
+            return False
+        
+        is_service_exists=await self.getby_service_name(service_name=data.service_name)
+        ic(is_service_exists)
+        if is_service_exists:
+            converted_fields_len_before=len(converted_fields)
+            converted_fields={**converted_fields,**is_service_exists['fields']}
+            ic(converted_fields_len_before)
+            ic(len(converted_fields))
+            ic(len(is_service_exists['fields'])+converted_fields_len_before)
+            if len(converted_fields) != (len(is_service_exists['fields'])+converted_fields_len_before):
+                return False
+            ic("hello")
+            return await BaseFieldsRepo(session=self.session).update(is_service_exists['id'],fields=converted_fields)
+        
+        field_id=generate_uuid()
+        data_toadd=CreateBaseFieldDbSchema(
+            id=field_id,
+            service_name=data.service_name,
+            fields=converted_fields
+        )
+
+        return await BaseFieldsRepo(session=self.session).create(data=data_toadd)
+
+    @start_db_transaction
+    async def update(self,data:UpdateBaseFieldSchema):
+        fields_toupdate=data.fields.model_dump(mode='json',exclude_none=True,exclude_unset=True)
+        if not fields_toupdate or len(fields_toupdate)<1:
+            return True
+        data_toupdate=UpdateBaseFieldSDbSchema(id=data.id,field_name=data.field_name,fields=fields_toupdate)
+
+        return await BaseFieldsRepo(session=self.session).update_field(data=data_toupdate)
+    
+    @start_db_transaction
+    async def delete(self,field_id:str,field_name:str):
+        return await BaseFieldsRepo(session=self.session).delete(field_id=field_id,field_name=field_name)
+    
+    async def get(self):
+        return await BaseFieldsRepo(session=self.session).get()
+    
+    async def getby_id(self,field_id:str):
+        return await BaseFieldsRepo(session=self.session).getby_id(field_id=field_id)
+    
+    async def getby_service_name(self,service_name:str):
+        return await BaseFieldsRepo(session=self.session).getby_service_name(service_name=service_name)
+    
+    async def search(self, query, limit = 5):
+        ...
+
+
+        
+
+    
