@@ -14,7 +14,7 @@ class CustomFieldsService(BaseServiceModel):
     def __init__(self, session:AsyncSession):
         self.session=session
 
-    @start_db_transaction
+    
     async def create(self,data:CreateCustomFieldSchema):
         converted_fields={}
         for field in data.fields:
@@ -51,7 +51,7 @@ class CustomFieldsService(BaseServiceModel):
         ic(data_toadd.id)
         return await CustomFieldsRepo(session=self.session).create(data=data_toadd)
 
-    @start_db_transaction
+    
     async def update(self,data:UpdateCustomFieldSSchema):
         fields_toupdate=data.fields.model_dump(mode='json',exclude_none=True,exclude_unset=True)
         if not fields_toupdate or len(fields_toupdate)<1:
@@ -61,7 +61,7 @@ class CustomFieldsService(BaseServiceModel):
         
         return await CustomFieldsRepo(session=self.session).update_field(data=data_toupdate)
     
-    @start_db_transaction
+    
     async def delete(self,field_id:str,field_name:str,shop_id:str):
         return await CustomFieldsRepo(session=self.session).delete(field_id=field_id,field_name=field_name,shop_id=shop_id)
     

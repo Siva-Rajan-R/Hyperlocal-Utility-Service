@@ -14,7 +14,6 @@ class BaseFieldsService(BaseServiceModel):
     def __init__(self, session:AsyncSession):
         self.session=session
 
-    @start_db_transaction
     async def create(self,data:CreateBaseFieldSchema):
         converted_fields={}
         for field in data.fields:
@@ -45,7 +44,6 @@ class BaseFieldsService(BaseServiceModel):
 
         return await BaseFieldsRepo(session=self.session).create(data=data_toadd)
 
-    @start_db_transaction
     async def update(self,data:UpdateBaseFieldSchema):
         fields_toupdate=data.fields.model_dump(mode='json',exclude_none=True,exclude_unset=True)
         if not fields_toupdate or len(fields_toupdate)<1:
@@ -54,7 +52,6 @@ class BaseFieldsService(BaseServiceModel):
 
         return await BaseFieldsRepo(session=self.session).update_field(data=data_toupdate)
     
-    @start_db_transaction
     async def delete(self,field_id:str,field_name:str):
         return await BaseFieldsRepo(session=self.session).delete(field_id=field_id,field_name=field_name)
     

@@ -13,7 +13,7 @@ class CustomDropDownService(BaseServiceModel):
     def __init__(self, session:AsyncSession):
         self.session=session
 
-    @start_db_transaction
+    
     async def create(self,data:CreateCustomDropDownValue):
         is_dd_exists=await CustomDropDownRepo(session=self.session).getby_name(name=data.dd_name,shop_id=data.shop_id)
         if is_dd_exists:
@@ -23,12 +23,12 @@ class CustomDropDownService(BaseServiceModel):
         data_toadd=CreateCustomDropDownDBValue(id=dd_id,values=data.values,shop_id=data.shop_id,name=data.dd_name)
         return await CustomDropDownRepo(session=self.session).create(data=data_toadd)
     
-    @start_db_transaction
+    
     async def update(self,data:UpdateCustomDropDownValue):
         data_toupdate=UpdateCustomDropDownDbValue(id=data.id,name=data.dd_name,shop_id=data.shop_id,values=data.values)
         return await CustomDropDownRepo(session=self.session).update(data=data_toupdate)
     
-    @start_db_transaction
+    
     async def delete(self,dd_id:str,shop_id:str):
         return await CustomDropDownRepo(session=self.session).delete(dd_id=dd_id,shop_id=shop_id)
     
