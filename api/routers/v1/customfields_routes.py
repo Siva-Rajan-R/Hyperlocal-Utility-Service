@@ -15,11 +15,11 @@ router=APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create(data:CreateCustomFieldSchema,session:PG_SESSION):
     return await CustomFieldsHandler(session=session).create(data=data)
 
-@router.put('/')
+@router.put('')
 async def update(data:UpdateCustomFieldSSchema,session:PG_SESSION):
     return await CustomFieldsHandler(session=session).update(data=data)
 
@@ -27,7 +27,7 @@ async def update(data:UpdateCustomFieldSSchema,session:PG_SESSION):
 async def delete(field_id:str,field_name:str,session:PG_SESSION):
     return await CustomFieldsHandler(session=session).delete(field_id=field_id,field_name=field_name,shop_id=SHOP_ID)
 
-@router.get('/')
+@router.get('')
 async def get(session:PG_SESSION):
     return await CustomFieldsHandler(session=session).get()
 

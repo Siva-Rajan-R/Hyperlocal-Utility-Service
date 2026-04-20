@@ -44,7 +44,9 @@ app=FastAPI(
     openapi_url=openapi_url,
     docs_url=docs_url,
     redoc_url=redoc_url,
-    lifespan=utility_service_lifespan
+    lifespan=utility_service_lifespan,
+    root_path="/utilities"
+    
 )
 
 

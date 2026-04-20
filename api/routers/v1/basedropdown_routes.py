@@ -15,11 +15,11 @@ router=APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create(data:CreateBaseDropDownValue,session:PG_SESSION):
     return await BaseDropDownHandler(session=session).create(data=data)
 
-@router.put('/')
+@router.put('')
 async def update(data:UpdateBaseDropDownValue,session:PG_SESSION):
     return await BaseDropDownHandler(session=session).update(data=data)
 
@@ -27,7 +27,7 @@ async def update(data:UpdateBaseDropDownValue,session:PG_SESSION):
 async def delete(dd_id:str,session:PG_SESSION):
     return await BaseDropDownHandler(session=session).delete(dd_id=dd_id)
 
-@router.get('/')
+@router.get('')
 async def get(session:PG_SESSION):
     return await BaseDropDownHandler(session=session).get()
 

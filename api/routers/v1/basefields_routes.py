@@ -15,11 +15,11 @@ router=APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create(data:CreateBaseFieldSchema,session:PG_SESSION):
     return await BaseFieldsHandler(session=session).create(data=data)
 
-@router.put('/')
+@router.put('')
 async def update(data:UpdateBaseFieldSchema,session:PG_SESSION):
     return await BaseFieldsHandler(session=session).update(data=data)
 
@@ -27,7 +27,7 @@ async def update(data:UpdateBaseFieldSchema,session:PG_SESSION):
 async def delete(field_id:str,field_name:str,session:PG_SESSION):
     return await BaseFieldsHandler(session=session).delete(field_id=field_id,field_name=field_name)
 
-@router.get('/')
+@router.get('')
 async def get(session:PG_SESSION):
     return await BaseFieldsHandler(session=session).get()
 

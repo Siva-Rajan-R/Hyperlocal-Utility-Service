@@ -15,11 +15,11 @@ router=APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create(data:CreateCustomDropDownValue,session:PG_SESSION):
     return await CustomDropDownHandler(session=session).create(data=data)
 
-@router.put('/')
+@router.put('')
 async def update(data:UpdateCustomDropDownValue,session:PG_SESSION):
     return await CustomDropDownHandler(session=session).update(data=data)
 
@@ -27,7 +27,7 @@ async def update(data:UpdateCustomDropDownValue,session:PG_SESSION):
 async def delete(dd_id:str,session:PG_SESSION):
     return await CustomDropDownHandler(session=session).delete(dd_id=dd_id,shop_id=SHOP_ID)
 
-@router.get('/')
+@router.get('')
 async def get(session:PG_SESSION):
     return await CustomDropDownHandler(session=session).get()
 
