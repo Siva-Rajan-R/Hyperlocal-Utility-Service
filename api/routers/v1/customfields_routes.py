@@ -5,7 +5,7 @@ from infras.primary_db.main import get_pg_async_session,AsyncSession
 
 
 PG_SESSION=Annotated[AsyncSession,Depends(get_pg_async_session)]
-SHOP_ID="string2"
+SHOP_ID="37d5519b-51a1-5854-982b-4d6524171017"
 
 router=APIRouter(
     tags=[

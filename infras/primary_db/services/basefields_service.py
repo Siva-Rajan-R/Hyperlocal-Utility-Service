@@ -52,7 +52,6 @@ class BaseFieldsService(BaseServiceModel):
 
         return await BaseFieldsRepo(session=self.session).update_field(data=data_toupdate)
     
-    @start_db_transaction
     async def delete(self,field_id:str,field_name:str):
         return await BaseFieldsRepo(session=self.session).delete(field_id=field_id,field_name=field_name)
     

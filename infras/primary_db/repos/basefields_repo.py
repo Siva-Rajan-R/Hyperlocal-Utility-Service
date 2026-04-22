@@ -138,7 +138,7 @@ class BaseFieldsRepo(BaseRepoModel):
 
         return is_updated
         
-    @start_db_transaction
+
     async def delete(self,field_id:str,field_name:str):
         fields=(await self.getby_id(field_id=field_id))
         ic(fields)
