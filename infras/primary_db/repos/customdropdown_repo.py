@@ -55,6 +55,20 @@ class CustomDropDownRepo(BaseRepoModel):
         dropdowns=(await self.session.execute(dd_toget_stmt)).mappings().all()
 
         return dropdowns
+
+    async def get_by_shop(self, shop_id: str):
+        dd_toget_stmt=select(
+            CustomDropdown.id,
+            CustomDropdown.shop_id,
+            CustomDropdown.name,
+            CustomDropdown.values
+        ).where(
+            CustomDropdown.shop_id==shop_id
+        )
+
+        dropdowns=(await self.session.execute(dd_toget_stmt)).mappings().all()
+
+        return dropdowns
     
     async def getby_id(self,dd_id:str,shop_id:str):
         dd_toget_stmt=select(

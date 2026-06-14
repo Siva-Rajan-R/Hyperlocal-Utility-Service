@@ -7,6 +7,11 @@ load_dotenv()
 class InventorySettings(BaseSettings):
     PG_DATABASE_URL:str
     ENVIRONMENT:EnvironmentEnum
+    MONGO_DB_URL:str
+    MINIO_ENDPOINT:str
+    MINIO_ACCESS_KEY:str
+    MINIO_SECRET_KEY:str
+    MINIO_SECURE:bool = True
     
     model_config={
         'case_sensitive':False,

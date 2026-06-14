@@ -65,5 +65,10 @@ app.include_router(customfields_routes.router)
 app.include_router(basedropdown_routes.router)
 app.include_router(customdropdown_routes.router)
 
+from api.routers.v1 import activity_log_routes, upload_routes, shopidconfig_routes
+app.include_router(activity_log_routes.router)
+app.include_router(upload_routes.router)
+app.include_router(shopidconfig_routes.router)
+
 
 

@@ -34,6 +34,12 @@ class CustomDropDownService(BaseServiceModel):
     
     async def get(self):
         return await CustomDropDownRepo(session=self.session).get()
+
+    async def get_by_shop(self, shop_id: str):
+        return await CustomDropDownRepo(session=self.session).get_by_shop(shop_id=shop_id)
+
+    async def get_by_name(self, shop_id: str, name: str):
+        return await CustomDropDownRepo(session=self.session).getby_name(name=name, shop_id=shop_id)
     
     async def getby_id(self,dd_id:str,shop_id:str):
         return await CustomDropDownRepo(session=self.session).getby_id(dd_id=dd_id,shop_id=shop_id)

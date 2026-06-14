@@ -12,3 +12,5 @@ pydantic-settings
 aio-pika
 motor
 git+https://github.com/Siva-Rajan-R/hyperlocal_platform
+minio
+python-multipart

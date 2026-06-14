@@ -86,8 +86,29 @@ class CustomDropDownHandler:
             ),
             data=res
         )
+
+    async def get_by_shop(self, shop_id: str):
+        res = await CustomDropDownService(session=self.session).get_by_shop(shop_id=shop_id)
+        return SuccessResponseTypDict(
+            detail=BaseResponseTypDict(
+                msg="Dropdowns fetched successfully",
+                status_code=200,
+                success=True
+            ),
+            data=res
+        )
+
+    async def get_by_name(self, shop_id: str, name: str):
+        res = await CustomDropDownService(session=self.session).get_by_name(shop_id=shop_id, name=name)
+        return SuccessResponseTypDict(
+            detail=BaseResponseTypDict(
+                msg="Dropdown fetched successfully",
+                status_code=200,
+                success=True
+            ),
+            data=res
+        )
         
-    
     async def getby_id(self,dd_id:str,shop_id:str):
         res=await CustomDropDownService(session=self.session).getby_id(dd_id=dd_id,shop_id=shop_id)
         return SuccessResponseTypDict(
