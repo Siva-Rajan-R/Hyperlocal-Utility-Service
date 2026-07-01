@@ -6,13 +6,12 @@ from messaging.main import RabbitMQMessagingConfig
 from models.messaging_models.consumer_model import BaseConsumerModel
 from hyperlocal_platform.infras.saga.schemas import CreateSagaStateSchema,UpdateSagaStateSchema
 from hyperlocal_platform.infras.saga.repo import SagaStatesRepo
-from core.errors.messaging_errors import BussinessError,RetryableError,FatalError,ErrorTypeSEnum
+from core.errors.messaging_errors import BussinessError,RetryableError,FatalError
 from hyperlocal_platform.core.enums.saga_state_enum import SagaStatusEnum,SagaStepsValueEnum
 from hyperlocal_platform.core.enums.routingkey_enum import RoutingkeyState,RoutingkeyActions
 from hyperlocal_platform.infras.saga.schemas import SagaStateExecutionTypDict,SagaStateErrorTypDict
 from hyperlocal_platform.infras.saga.main import AsyncInfraDbLocalSession
 from hyperlocal_platform.core.typed_dicts.messaging_typdict import SuccessMessagingTypDict,EventPublishingTypDict
-from core.utils.exception_serializer import serialize_exception
 from hyperlocal_platform.core.typed_dicts.messaging_typdict import EventPublishingTypDict
 from hyperlocal_platform.core.utils.routingkey_builder import generate_routingkey
 from typing import Optional
@@ -145,7 +144,7 @@ async def service_main_controller(msg:AbstractIncomingMessage):
 
 
         except Exception as e:
-            debug_msg=serialize_exception(e)
+            debug_msg=e
             ic(f"An error occurred while processing the message: {e}")
             await saga_repo.update_status(
                     status=SagaStatusEnum.CANCELED,

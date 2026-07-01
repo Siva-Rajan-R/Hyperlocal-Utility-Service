@@ -11,10 +11,13 @@ BASE=declarative_base()
 
 AsyncUtilisLocalSession=async_sessionmaker(ENGINE,class_=AsyncSession,expire_on_commit=False)
 
+from .models import shop_categories, shop_units
+
 async def init_utilis_pg_db():
     try:
         ic("initializing pg db...")
         async with ENGINE.connect() as conn:
+            # await conn.run_sync(BASE.metadata.drop_all)
             await conn.run_sync(BASE.metadata.create_all)
             await conn.commit()
         ic("...Databse initialized successfully...")

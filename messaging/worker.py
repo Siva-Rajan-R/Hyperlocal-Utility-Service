@@ -6,9 +6,11 @@ async def worker():
     rabbitmq_conn=await RabbitMQMessagingConfig.get_rabbitmq_connection()
     rabbitmq_msg_obj=RabbitMQMessagingConfig(rabbitMQ_connection=rabbitmq_conn)
 
+    from .msgqueue_consumers.activity_logs_msgqueue_consumer import activity_logs_consumer_handler
+    
     # Exchanges
     exchanges=[
-        {'name':'products.service.exchange','exc_type':ExchangeType.DIRECT}
+        {'name':'activity_logs.exchange','exc_type':ExchangeType.TOPIC}
     ]
 
     for exchange in exchanges:
@@ -16,7 +18,7 @@ async def worker():
 
     # Queues
     queues=[
-        {'exc_name':'products.service.exchange','q_name':'products.service.queue','r_key':'products.service.routing.key'}
+        {'exc_name':'activity_logs.exchange','q_name':'activity_logs.queue','r_key':'activity_logs.routing.key'}
     ]
 
     for queue in queues:
@@ -28,7 +30,7 @@ async def worker():
 
     # Consumers
     consumers=[
-        {'q_name':'products.service.queue','handler':service_main_controller}
+        {'q_name':'activity_logs.queue','handler':activity_logs_consumer_handler}
     ]
 
     for consumer in consumers:

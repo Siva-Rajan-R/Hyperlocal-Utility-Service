@@ -10,17 +10,17 @@ MINIO_ENDPOINT = getattr(SETTINGS, "MINIO_ENDPOINT", "localhost:9000")
 MINIO_ACCESS_KEY = getattr(SETTINGS, "MINIO_ACCESS_KEY", "minioadmin")
 MINIO_SECRET_KEY = getattr(SETTINGS, "MINIO_SECRET_KEY", "minioadmin")
 MINIO_SECURE = getattr(SETTINGS, "MINIO_SECURE", True)
-
-try:
-    minio_client = Minio(
-        MINIO_ENDPOINT,
-        access_key=MINIO_ACCESS_KEY,
-        secret_key=MINIO_SECRET_KEY,
-        secure=MINIO_SECURE
-    )
-except Exception as e:
-    ic(f"Error initializing MinIO client: {e}")
-    minio_client = None
+minio_client=""
+# try:
+#     minio_client = Minio(
+#         MINIO_ENDPOINT,
+#         access_key=MINIO_ACCESS_KEY,
+#         secret_key=MINIO_SECRET_KEY,
+#         secure=MINIO_SECURE
+#     )
+# except Exception as e:
+#     ic(f"Error initializing MinIO client: {e}")
+#     minio_client = None
 
 BUCKET_NAME = "hyperlocalassets"
 
@@ -56,7 +56,7 @@ def ensure_bucket_exists():
         ic(f"Error checking/creating bucket: {err}")
 
 # Try to ensure bucket exists on startup
-ensure_bucket_exists()
+# ensure_bucket_exists()
 
 def upload_file_to_minio(file_bytes: bytes, file_name: str, content_type: str) -> str:
     """

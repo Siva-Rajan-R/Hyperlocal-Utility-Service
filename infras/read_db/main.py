@@ -6,7 +6,7 @@ from icecream import ic
 MONGO_CLIENT=AsyncIOMotorClient(SETTINGS.MONGO_DB_URL)
 
 
-DB=MONGO_CLIENT["UtilityDb"]
+DB=MONGO_CLIENT["UtilityServiceReadDb"]
 
 INVENTORY_COLLECTION=DB['inventory_collection']
-ACTIVITY_LOGS_COLLECTION=DB['activity_logs_collection']
+ACTIVITY_LOGS_COLLECTION=DB['ActivityLogsCollection']

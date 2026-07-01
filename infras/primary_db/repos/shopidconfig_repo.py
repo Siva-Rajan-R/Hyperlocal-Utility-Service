@@ -3,6 +3,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hyperlocal_platform.core.decorators.db_session_handler_dec import start_db_transaction
+from icecream import ic
 
 
 class ShopIdConfigRepo:
@@ -26,4 +27,5 @@ class ShopIdConfigRepo:
             ShopIdConfig.config,
         ).where(ShopIdConfig.shop_id == shop_id)
         row = (await self.session.execute(stmt)).mappings().one_or_none()
+        ic(row)
         return row
