@@ -21,7 +21,6 @@ from messaging.main import RabbitMQMessagingConfig
 
 from datetime import datetime, timezone
 
-from hyperlocal_platform.core.utils.activity_logger import ActivityLogger
 from core.constants import DEFAULT_UI_IDS
 from icecream import ic
 
