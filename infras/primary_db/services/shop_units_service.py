@@ -7,7 +7,6 @@ from ..repos.shop_units_repo import ShopUnitRepo
 from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
 from messaging.main import RabbitMQMessagingConfig
 from datetime import datetime, timezone
-from hyperlocal_platform.core.utils.activity_logger import ActivityLogger
 from ..models.shop_units import ShopUnits
 from typing import Optional,List
 from core.constants import DEFAULT_UNITS
