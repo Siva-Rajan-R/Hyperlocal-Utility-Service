@@ -8,7 +8,6 @@ from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
 from messaging.main import RabbitMQMessagingConfig
 from datetime import datetime, timezone
 from ..models.shop_categories import ShopCategories
-from hyperlocal_platform.core.utils.activity_logger import ActivityLogger
 from core.constants import DEFAULT_CATEGORIES
 from icecream import ic
 
