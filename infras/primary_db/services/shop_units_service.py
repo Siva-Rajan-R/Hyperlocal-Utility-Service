@@ -99,19 +99,19 @@ class ShopUnitService:
             **data.model_dump()
         )
         res = await self.repo.create(data=db_data)
-        if res:
-            await self._emit_event("CREATED", unit_id, data.shop_id)
+        # if res:
+        #     await self._emit_event("CREATED", unit_id, data.shop_id)
             
-            unit_name = data.name if hasattr(data, 'name') else 'Unknown'
-            await ActivityLogger.log(
-                shop_id=data.shop_id,
-                service="Utility",
-                action="CREATE",
-                entity_type="ShopUnit",
-                entity_id=unit_id,
-                description=f"Created shop unit: {unit_name}",
-                changes=[{"field": "name", "before": "", "after": str(unit_name)}]
-            )
+        #     unit_name = data.name if hasattr(data, 'name') else 'Unknown'
+        #     await ActivityLogger.log(
+        #         shop_id=data.shop_id,
+        #         service="Utility",
+        #         action="CREATE",
+        #         entity_type="ShopUnit",
+        #         entity_id=unit_id,
+        #         description=f"Created shop unit: {unit_name}",
+        #         changes=[{"field": "name", "before": "", "after": str(unit_name)}]
+        #     )
         return res
 
     async def update(self, data: UpdateShopUnitSchema):

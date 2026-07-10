@@ -5,11 +5,33 @@ from fastapi.exceptions import HTTPException
 from hyperlocal_platform.core.decorators.db_session_handler_dec import start_db_transaction
 from hyperlocal_platform.core.enums.timezone_enum import TimeZoneEnum
 from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
+from infras.primary_db.main import AsyncUtilisLocalSession
+from infras.primary_db.services.shop_categories_service import ShopCategoryService
+from infras.primary_db.services.shop_units_service import ShopUnitService
+from infras.primary_db.services.shop_ui_id_service import ShopUiIdService
 from typing import Optional,Union
 from icecream import ic
 
-class MessagingQueueProductService:
-    ...
+class MessagingQueueUtilityService:
+    async def init_defaults(self, data:dict):
+        shop_id=data['shop_id']
+        async with AsyncUtilisLocalSession() as session:
+            try:
+                ic(f"Initializing defaults for shop {shop_id}...")
+                # 1. Initialize Categories
+                await ShopCategoryService(session=session).init_categories(shop_id=shop_id)
+                # 2. Initialize Units
+                await ShopUnitService(session=session).init_units(shop_id=shop_id)
+                # 3. Initialize UI IDs
+                await ShopUiIdService(session=session).init_ids(shop_id=shop_id)
+                await session.commit()
+                ic(f"Defaults successfully initialized for shop {shop_id}")
+            except Exception as err:
+                ic(f"Failed to initialize defaults for shop {shop_id}: {err}")
+                await session.rollback()
+        return True
+
+        
     # async def create_product(self,data:Union[CreateProductSchema,dict]):
     #     if isinstance(data, dict):
     #         data = CreateProductSchema(**data)

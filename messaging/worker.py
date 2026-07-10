@@ -10,7 +10,8 @@ async def worker():
     
     # Exchanges
     exchanges=[
-        {'name':'activity_logs.exchange','exc_type':ExchangeType.TOPIC}
+        {'name':'activity_logs.exchange','exc_type':ExchangeType.TOPIC},
+        {'name':'utility.service.exchange','exc_type':ExchangeType.TOPIC}
     ]
 
     for exchange in exchanges:
@@ -18,7 +19,8 @@ async def worker():
 
     # Queues
     queues=[
-        {'exc_name':'activity_logs.exchange','q_name':'activity_logs.queue','r_key':'activity_logs.routing.key'}
+        {'exc_name':'activity_logs.exchange','q_name':'activity_logs.queue','r_key':'activity_logs.routing.key'},
+        {'exc_name':'utility.service.exchange','q_name':'utility.service.queue','r_key':'utility.service.routing.key'}
     ]
 
     for queue in queues:
@@ -30,7 +32,8 @@ async def worker():
 
     # Consumers
     consumers=[
-        {'q_name':'activity_logs.queue','handler':activity_logs_consumer_handler}
+        {'q_name':'activity_logs.queue','handler':activity_logs_consumer_handler},
+        {'q_name':'utility.service.queue','handler':service_main_controller}
     ]
 
     for consumer in consumers:

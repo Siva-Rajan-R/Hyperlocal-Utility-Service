@@ -17,11 +17,11 @@ from hyperlocal_platform.core.utils.routingkey_builder import generate_routingke
 from typing import Optional
 from hyperlocal_platform.core.basemodels.readdb_model import ReadDbBaseModel
 from core.constants import SERVICE_NAME
-from ..msgqueue_services.product_msgqueue_service import MessagingQueueProductService
+from ..msgqueue_services.utility_msgqueue_service import MessagingQueueUtilityService
 
 
 MESSAGING_QUEUE_SERVICE_MAPPER_BY_SERVICE_NAME={
-    "PRODUCTS":MessagingQueueProductService
+    "UTILITY":MessagingQueueUtilityService
 }
 
 SERVICE_NAME=SERVICE_NAME.upper()
@@ -167,12 +167,13 @@ async def service_main_controller(msg:AbstractIncomingMessage):
         finally:
             ic("Finally publishing the event to reply exchange")
             
-            await RabbitMQMessagingConfig().publish_event(
-                routing_key=reply_key,
-                payload=payload,
-                headers=headers,
-                exchange_name=reply_exchange
-            )
+            if reply_entity_name!="None" and reply_key!="None" and reply_exchange!="None":
+                await RabbitMQMessagingConfig().publish_event(
+                    routing_key=reply_key,
+                    payload=payload,
+                    headers=headers,
+                    exchange_name=reply_exchange
+                )
 
             await msg.ack()
 

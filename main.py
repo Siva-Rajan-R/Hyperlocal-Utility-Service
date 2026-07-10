@@ -27,7 +27,7 @@ async def utility_service_lifespan(app:FastAPI):
         #     await ShopUiIdService(session=session).init_ids(shop_id="string")
         #     await ShopUnitService(session=session).init_units(shop_id="string")
         #     await ShopCategoryService(session=session).init_categories(shop_id="string")
-        # asyncio.create_task(worker())
+        asyncio.create_task(worker())
         yield
 
     except Exception as e:
