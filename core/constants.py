@@ -139,3 +139,9 @@ DEFAULT_UNITS = [
         "description": "Set of items",
     },
 ]
+
+
+
+ALLOWED_EXTENSIONS = {"image/jpeg", "image/png", "image/webp", "image/jpg"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+

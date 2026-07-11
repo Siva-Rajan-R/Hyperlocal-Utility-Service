@@ -70,10 +70,10 @@ app.add_middleware(
 
 
 # Routes to include
-app.include_router(basefields_routes.router)
-app.include_router(customfields_routes.router)
-app.include_router(basedropdown_routes.router)
-app.include_router(customdropdown_routes.router)
+# app.include_router(basefields_routes.router)
+# app.include_router(customfields_routes.router)
+# app.include_router(basedropdown_routes.router)
+# app.include_router(customdropdown_routes.router)
 
 
 from api.routers.v1 import activity_log_routes, upload_routes, shopidconfig_routes, shop_categories_routes, shop_units_routes

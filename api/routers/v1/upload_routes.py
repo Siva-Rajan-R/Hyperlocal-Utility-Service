@@ -1,19 +1,21 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException,Query
 from typing import List
 from icecream import ic
 from integrations.minio_client import upload_file_to_minio
 from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
 from hyperlocal_platform.core.models.req_res_models import SuccessResponseTypDict, BaseResponseTypDict, ErrorResponseTypDict
+from core.services.upload_service import upload_assets,delete_assets
+from core.constants import MAX_FILE_SIZE,ALLOWED_EXTENSIONS
+from core.utils.filename_generator import generate_unq_filename
+from pydantic import BaseModel
+
 
 router = APIRouter(
     tags=['Uploads'],
     prefix="/upload"
 )
 
-ALLOWED_EXTENSIONS = {"image/jpeg", "image/png", "image/webp", "image/jpg"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
-
-@router.post('/images')
+@router.post('/assets')
 async def upload_images(files: List[UploadFile] = File(...)):
     if len(files) > 4:
         raise HTTPException(
@@ -55,11 +57,18 @@ async def upload_images(files: List[UploadFile] = File(...)):
             
         # Generate a unique filename using UUID and original extension
         ext = file.filename.split('.')[-1] if '.' in file.filename else ''
-        unique_filename = f"{generate_uuid()}.{ext}" if ext else generate_uuid()
+        unique_filename = generate_unq_filename(extenstion=ext)
         
         try:
-            url = upload_file_to_minio(file_bytes, unique_filename, file.content_type)
+            url = upload_assets(
+                file_data=file_bytes,
+                bucket_name="inventoryassets",
+                file_name=unique_filename,
+                content_type=file.content_type
+            )
+
             uploaded_urls.append(url)
+
         except Exception as e:
             ic(f"Error uploading file {file.filename}: {e}")
             raise HTTPException(
@@ -81,13 +90,22 @@ async def upload_images(files: List[UploadFile] = File(...)):
         data=uploaded_urls
     )
 
-@router.delete('/images')
-async def delete_image(url: str):
-    from integrations.minio_client import delete_file_from_minio
+
+# class DeleteAssetsSchema(BaseModel):
+#     urls: List[str]
+
+@router.delete('/assets')
+async def delete_image(urls:List[str]=Query(...)):
     # Extract filename from url
     try:
-        filename = url.split('/')[-1]
-        success = delete_file_from_minio(filename)
+        filenames = []
+        for url in urls:
+            filenames.append(url.split('/')[-1])
+        ic(filenames)
+        bucket_name=urls[0].split('/')[3]
+        ic(bucket_name)
+        success = delete_assets(file_names=filenames,bucket_name=bucket_name)
+        
         if success:
             return SuccessResponseTypDict(
                 detail=BaseResponseTypDict(
