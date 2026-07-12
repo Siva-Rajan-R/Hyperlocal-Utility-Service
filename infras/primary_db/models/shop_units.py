@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Boolean, TIMESTAMP, func
+from sqlalchemy.dialects.postgresql import JSONB
 from ..main import BASE
 
 class ShopUnits(BASE):
@@ -11,6 +12,7 @@ class ShopUnits(BASE):
     description = Column(String)
     is_default = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
+    sub_units = Column(JSONB, nullable=True, default=list)
 
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(

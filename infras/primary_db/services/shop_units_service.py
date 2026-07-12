@@ -73,6 +73,11 @@ class ShopUnitService:
         )
 
     async def init_units(self, shop_id: str):
+        existing = await self.repo.get(GetShopUnitSchema(shop_id=shop_id, limit=1))
+        if existing:
+            ic("Units already initialized for shop", shop_id)
+            return True
+
         data = []
         for item in DEFAULT_UNITS:
             data.append(
@@ -84,6 +89,7 @@ class ShopUnitService:
                     description=item["description"],
                     is_default=True,
                     is_active=True,
+                    sub_units=item.get("sub_units", []),
                 )
 
             )
@@ -93,6 +99,11 @@ class ShopUnitService:
         return res
 
     async def create(self, data: CreateShopUnitSchema):
+        existing = await self.repo.get_by_name(shop_id=data.shop_id, name=data.name)
+        if existing:
+            ic(f"A unit with the name '{data.name}' already exists.")
+            return False
+
         unit_id = generate_uuid()
         db_data = CreateShopUnitDbSchema(
             id=unit_id,
@@ -116,23 +127,48 @@ class ShopUnitService:
 
     async def update(self, data: UpdateShopUnitSchema):
         old_unit = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
+        if not old_unit:
+            raise Exception("Unit not found")
+
+        # Duplicate check if name is being updated
+        if data.name and data.name.lower() != (old_unit.get("name") or old_unit.name).lower():
+            existing = await self.repo.get_by_name(shop_id=data.shop_id, name=data.name)
+            if existing and existing.id != data.id:
+                raise ValueError(f"A unit with the name '{data.name}' already exists.")
+        
+        if data.sub_units:
+            base_name = data.name or old_unit.get("name") or old_unit.name
+            base_name_lower = base_name.lower()
+            seen_names = set()
+            seen_factors = set()
+            for su in data.sub_units:
+                su_name_lower = su.name.lower()
+                if su_name_lower == base_name_lower:
+                    raise ValueError(f"Base unit '{base_name}' cannot be added as a sub unit")
+                if su_name_lower in seen_names:
+                    raise ValueError(f"Duplicate sub unit name: {su.name}")
+                if su.factor in seen_factors:
+                    raise ValueError(f"Duplicate conversion factor: {su.factor}")
+                seen_names.add(su_name_lower)
+                seen_factors.add(su.factor)
+
         res = await self.repo.update(data=UpdateShopUnitDbSchema(**data.model_dump(exclude_unset=True)))
-        if res and old_unit:
-            await self._emit_event("UPDATED", data.id, data.shop_id)
+        # if res and old_unit:
+        #     await self._emit_event("UPDATED", data.id, data.shop_id)
             
-            changes_list = ActivityLogger.compute_changes(old_unit, data.model_dump(exclude_none=True, exclude_unset=True))
-            if changes_list:
-                desc_changes = [f"{c['field']} prv({c['before']}) after ({c['after']})" for c in changes_list]
-                desc = f"updated shop unit {', '.join(desc_changes)}"
-                await ActivityLogger.log(
-                    shop_id=data.shop_id,
-                    service="Utility",
-                    action="UPDATE",
-                    entity_type="ShopUnit",
-                    entity_id=data.id,
-                    description=desc,
-                    changes=changes_list
-                )
+        #     changes_list = ActivityLogger.compute_changes(old_unit, data.model_dump(exclude_none=True, exclude_unset=True))
+        #     if changes_list:
+        #         desc_changes = [f"{c['field']} prv({c['before']}) after ({c['after']})" for c in changes_list]
+        #         desc = f"updated shop unit {', '.join(desc_changes)}"
+        #         await ActivityLogger.log(
+        #             shop_id=data.shop_id,
+        #             service="Utility",
+        #             action="UPDATE",
+        #             entity_type="ShopUnit",
+        #             entity_id=data.id,
+        #             description=desc,
+        #             changes=changes_list
+        #         )
         return res
 
     async def delete(self, data: DeleteShopUnitSchema):

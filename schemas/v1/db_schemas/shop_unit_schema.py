@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class CreateShopUnitDbSchema(BaseModel):
     id: str
@@ -9,6 +9,7 @@ class CreateShopUnitDbSchema(BaseModel):
     description: Optional[str] = None
     is_default: bool = False
     is_active: bool = True
+    sub_units: Optional[List[dict]] = None
 
 class UpdateShopUnitDbSchema(BaseModel):
     id: str
@@ -17,3 +18,4 @@ class UpdateShopUnitDbSchema(BaseModel):
     short_name: Optional[str] = None
     description: Optional[str] = None
     is_active: Optional[bool] = None
+    sub_units: Optional[List[dict]] = None

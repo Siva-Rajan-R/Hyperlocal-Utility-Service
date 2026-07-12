@@ -59,6 +59,11 @@ class ShopUiIdService:
         )
 
     async def init_ids(self, shop_id: str):
+        existing = await self.repo.get(GetShopUiIdSchema(shop_id=shop_id, limit=1))
+        if existing:
+            ic("UI IDs already initialized for shop", shop_id)
+            return True
+
         data = []
         DEFAULT_START_NUMBER=100000
         for item in DEFAULT_UI_IDS:

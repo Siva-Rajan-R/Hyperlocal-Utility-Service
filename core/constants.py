@@ -67,76 +67,99 @@ DEFAULT_UNITS = [
         "name": "Piece",
         "short_name": "Pc",
         "description": "Individual item",
+        "sub_units": []
     },
     {
         "name": "Kilogram",
         "short_name": "Kg",
         "description": "Weight in kilograms",
+        "sub_units": [
+            {"name": "g", "factor": 0.001},
+            {"name": "mg", "factor": 0.000001}
+        ]
     },
     {
         "name": "Gram",
         "short_name": "g",
         "description": "Weight in grams",
+        "sub_units": []
     },
     {
         "name": "Liter",
         "short_name": "L",
         "description": "Volume in liters",
+        "sub_units": [
+            {"name": "mL", "factor": 0.001}
+        ]
     },
     {
         "name": "Milliliter",
         "short_name": "mL",
         "description": "Volume in milliliters",
+        "sub_units": []
     },
     {
         "name": "Meter",
         "short_name": "m",
         "description": "Length in meters",
+        "sub_units": [
+            {"name": "cm", "factor": 0.01},
+            {"name": "mm", "factor": 0.001}
+        ]
     },
     {
         "name": "Centimeter",
         "short_name": "cm",
         "description": "Length in centimeters",
+        "sub_units": []
     },
     {
         "name": "Box",
         "short_name": "Box",
         "description": "Box package",
+        "sub_units": []
     },
     {
         "name": "Packet",
         "short_name": "Pkt",
         "description": "Packet",
+        "sub_units": []
     },
     {
         "name": "Bottle",
         "short_name": "Btl",
         "description": "Bottle",
+        "sub_units": []
     },
     {
         "name": "Can",
         "short_name": "Can",
         "description": "Can",
+        "sub_units": []
     },
     {
         "name": "Bag",
         "short_name": "Bag",
         "description": "Bag",
+        "sub_units": []
     },
     {
         "name": "Dozen",
         "short_name": "Doz",
         "description": "12 pieces",
+        "sub_units": []
     },
     {
         "name": "Pack",
         "short_name": "Pack",
         "description": "Pack",
+        "sub_units": []
     },
     {
         "name": "Set",
         "short_name": "Set",
         "description": "Set of items",
+        "sub_units": []
     },
 ]
 

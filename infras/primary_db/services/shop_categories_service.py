@@ -76,6 +76,11 @@ class ShopCategoryService:
 
 
     async def init_categories(self, shop_id: str):
+        existing = await self.repo.get(GetShopCategorySchema(shop_id=shop_id, limit=1))
+        if existing:
+            ic("Categories already initialized for shop", shop_id)
+            return True
+
         data = []
         for item in DEFAULT_CATEGORIES:
             data.append(
@@ -95,6 +100,11 @@ class ShopCategoryService:
         return res
 
     async def create(self, data: CreateShopCategorySchema):
+        existing = await self.repo.get_by_name(shop_id=data.shop_id, name=data.name)
+        if existing:
+            ic(f"A category with the name '{data.name}' already exists.")
+            return False
+
         cat_id = generate_uuid()
         db_data = CreateShopCategoryDbSchema(
             id=cat_id,
@@ -119,23 +129,32 @@ class ShopCategoryService:
     async def update(self, data: UpdateShopCategorySchema):
         # We don't check if it's default here, because repo update handles `is_default == False`
         old_cat = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
+        if not old_cat:
+            raise Exception("Category not found")
+
+        # Duplicate check if name is being updated
+        if data.name and data.name.lower() != (old_cat.get("name") or old_cat.name).lower():
+            existing = await self.repo.get_by_name(shop_id=data.shop_id, name=data.name)
+            if existing and existing.id != data.id:
+                raise ValueError(f"A category with the name '{data.name}' already exists.")
+
         res = await self.repo.update(data=UpdateShopCategoryDbSchema(**data.model_dump(exclude_unset=True)))
-        if res and old_cat:
-            await self._emit_event("UPDATED", data.id, data.shop_id)
+        # if res and old_cat:
+        #     await self._emit_event("UPDATED", data.id, data.shop_id)
             
-            changes_list = ActivityLogger.compute_changes(old_cat, data.model_dump(exclude_none=True, exclude_unset=True))
-            if changes_list:
-                desc_changes = [f"{c['field']} prv({c['before']}) after ({c['after']})" for c in changes_list]
-                desc = f"updated shop category {', '.join(desc_changes)}"
-                await ActivityLogger.log(
-                    shop_id=data.shop_id,
-                    service="Utility",
-                    action="UPDATE",
-                    entity_type="ShopCategory",
-                    entity_id=data.id,
-                    description=desc,
-                    changes=changes_list
-                )
+        #     changes_list = ActivityLogger.compute_changes(old_cat, data.model_dump(exclude_none=True, exclude_unset=True))
+        #     if changes_list:
+        #         desc_changes = [f"{c['field']} prv({c['before']}) after ({c['after']})" for c in changes_list]
+        #         desc = f"updated shop category {', '.join(desc_changes)}"
+        #         await ActivityLogger.log(
+        #             shop_id=data.shop_id,
+        #             service="Utility",
+        #             action="UPDATE",
+        #             entity_type="ShopCategory",
+        #             entity_id=data.id,
+        #             description=desc,
+        #             changes=changes_list
+        #         )
         return res
 
     async def delete(self, data: DeleteShopCategorySchema):

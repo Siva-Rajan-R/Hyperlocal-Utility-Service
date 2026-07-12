@@ -65,6 +65,7 @@ class ShopCategoryRepo:
 
     async def get(self, data: GetShopCategorySchema):
         cursor = (data.offset - 1) * data.limit
+        is_active_val = data.is_active if data.is_active is not None else True
         stmt = (
             select(*self.cols)
             .where(
@@ -73,7 +74,7 @@ class ShopCategoryRepo:
                         ShopCategories.shop_id == data.shop_id,
                         ShopCategories.shop_id == "DEFAULT"
                     ),
-                    ShopCategories.is_active == True
+                    ShopCategories.is_active == is_active_val
                 )
             )
             .offset(cursor)
@@ -92,6 +93,19 @@ class ShopCategoryRepo:
                         ShopCategories.shop_id == shop_id,
                         ShopCategories.shop_id == "DEFAULT"
                     )
+                )
+            )
+        )
+        return (await self.session.execute(stmt)).mappings().one_or_none()
+
+    async def get_by_name(self, shop_id: str, name: str):
+        from sqlalchemy import func
+        stmt = (
+            select(*self.cols)
+            .where(
+                and_(
+                    ShopCategories.shop_id == shop_id,
+                    func.lower(ShopCategories.name) == name.lower()
                 )
             )
         )

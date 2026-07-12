@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, insert, or_, and_
+from sqlalchemy import select, update, delete, insert, or_, and_,func
 from hyperlocal_platform.core.decorators.db_session_handler_dec import start_db_transaction
 from ..models.shop_units import ShopUnits
 from schemas.v1.db_schemas.shop_unit_schema import CreateShopUnitDbSchema, UpdateShopUnitDbSchema
@@ -17,6 +17,7 @@ class ShopUnitRepo:
             ShopUnits.description,
             ShopUnits.is_default,
             ShopUnits.is_active,
+            ShopUnits.sub_units,
             ShopUnits.created_at,
             ShopUnits.updated_at
         )
@@ -65,6 +66,7 @@ class ShopUnitRepo:
 
     async def get(self, data: GetShopUnitSchema):
         cursor = (data.offset - 1) * data.limit
+        is_active_val = data.is_active if data.is_active is not None else True
         stmt = (
             select(*self.cols)
             .where(
@@ -73,7 +75,7 @@ class ShopUnitRepo:
                         ShopUnits.shop_id == data.shop_id,
                         ShopUnits.shop_id == "DEFAULT"
                     ),
-                    ShopUnits.is_active == True
+                    ShopUnits.is_active == is_active_val
                 )
             )
             .offset(cursor)
@@ -92,6 +94,18 @@ class ShopUnitRepo:
                         ShopUnits.shop_id == shop_id,
                         ShopUnits.shop_id == "DEFAULT"
                     )
+                )
+            )
+        )
+        return (await self.session.execute(stmt)).mappings().one_or_none()
+
+    async def get_by_name(self, shop_id: str, name: str):
+        stmt = (
+            select(*self.cols)
+            .where(
+                and_(
+                    ShopUnits.shop_id == shop_id,
+                    func.lower(ShopUnits.name) == name.lower()
                 )
             )
         )
