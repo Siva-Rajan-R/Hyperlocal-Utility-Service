@@ -12,6 +12,10 @@ class InventorySettings(BaseSettings):
     MINIO_ACCESS_KEY:str
     MINIO_SECRET_KEY:str
     MINIO_SECURE:bool = True
+    RABBITMQ_HOST:str
+    RABBITMQ_PORT:int
+    RABBITMQ_LOGIN:str
+    RABBITMQ_PASSWORD:str
     
     model_config={
         'case_sensitive':False,
