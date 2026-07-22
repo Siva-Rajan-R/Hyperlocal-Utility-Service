@@ -9,6 +9,7 @@ class ActivityLogSchema(BaseModel):
     action: str
     entity_type: str
     entity_id: str
+    entity_name: Optional[str] = ""
     description: str
     changes: Optional[list[dict]] = []
 

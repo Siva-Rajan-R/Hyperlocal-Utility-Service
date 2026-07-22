@@ -11,6 +11,7 @@ class ActivityLogReadModel(BaseModel):
     action: str
     entity_type: str
     entity_id: str
+    entity_name: Optional[str] = ""
     description: str
     changes: Optional[list[dict]] = []
     created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())

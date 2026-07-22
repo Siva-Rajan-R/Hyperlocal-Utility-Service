@@ -16,8 +16,8 @@ async def create_activity_log(data: ActivityLogSchema):
     return {"status_code": 201, "success": True, "msg": "Activity log created successfully"}
 
 @router.get('/{shop_id}')
-async def get_activity_logs(shop_id: str, limit: int = 50, offset: int = 0):
-    logs = await ActivityLogReadDbRepo.get_logs(shop_id=shop_id, limit=limit, offset=offset)
+async def get_activity_logs(shop_id: str, limit: int = 50, offset: int = 0, q: Optional[str] = Query(None), from_date: Optional[str] = Query(None), to_date: Optional[str] = Query(None)):
+    logs = await ActivityLogReadDbRepo.get_logs(shop_id=shop_id, limit=limit, offset=offset, query=q, from_date=from_date, to_date=to_date)
     return {
         "detail": {
             "status_code": 200,
