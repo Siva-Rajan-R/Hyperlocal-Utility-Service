@@ -8,7 +8,8 @@ from hyperlocal_platform.core.utils.uuid_generator import generate_uuid
 from messaging.main import RabbitMQMessagingConfig
 from datetime import datetime, timezone
 from ..models.shop_categories import ShopCategories
-from core.constants import DEFAULT_CATEGORIES
+from core.constants import DEFAULT_CATEGORIES, SHOP_CATEGORIES_MAPPING
+from typing import Optional, List
 from icecream import ic
 
 INVENTORY_SERVICE_URL = "http://127.0.0.1:8000/inventories"
@@ -75,14 +76,36 @@ class ShopCategoryService:
 
 
 
-    async def init_categories(self, shop_id: str):
+    async def init_categories(self, shop_id: str, categories: Optional[List[str]] = None):
         existing = await self.repo.get(GetShopCategorySchema(shop_id=shop_id, limit=1))
         if existing:
             ic("Categories already initialized for shop", shop_id)
             return True
 
+        target_product_cats = []
+        seen_names = set()
+
+        if categories and isinstance(categories, list):
+            for shop_cat in categories:
+                cat_upper = str(shop_cat).upper().strip()
+                mapped_list = None
+                for key, val in SHOP_CATEGORIES_MAPPING.items():
+                    if key == cat_upper or key in cat_upper or cat_upper in key:
+                        mapped_list = val
+                        break
+                if not mapped_list:
+                    mapped_list = DEFAULT_CATEGORIES
+                
+                for item in mapped_list:
+                    if item['name'] not in seen_names:
+                        seen_names.add(item['name'])
+                        target_product_cats.append(item)
+
+        if not target_product_cats:
+            target_product_cats = DEFAULT_CATEGORIES
+
         data = []
-        for item in DEFAULT_CATEGORIES:
+        for item in target_product_cats:
             data.append(
                 ShopCategories(
                     id=generate_uuid(),
@@ -92,12 +115,14 @@ class ShopCategoryService:
                     is_default=True,
                     is_active=True,
                 )
-
             )
 
         res = await self.repo.create_bulk(data=data)
         ic(res)
         return res
+
+    async def get_predefined_shop_categories(self):
+        return SHOP_CATEGORIES_MAPPING
 
     async def create(self, data: CreateShopCategorySchema):
         existing = await self.repo.get_by_name(shop_id=data.shop_id, name=data.name)

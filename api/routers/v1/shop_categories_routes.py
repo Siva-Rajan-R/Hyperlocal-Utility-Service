@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends
-from typing import Annotated
+from typing import Annotated, Optional, List
+from fastapi import APIRouter, Depends, Query
 from infras.primary_db.main import get_pg_async_session, AsyncSession
 from ...handlers.shop_categories_handler import ShopCategoryHandler
 from schemas.v1.request_schemas.shop_category_schema import CreateShopCategorySchema, UpdateShopCategorySchema, DeleteShopCategorySchema, GetShopCategorySchema
@@ -11,13 +11,17 @@ router = APIRouter(
 
 PG_SESSION = Annotated[AsyncSession, Depends(get_pg_async_session)]
 
+@router.get('/predefined')
+async def get_predefined_shop_categories(session: PG_SESSION):
+    return await ShopCategoryHandler(session=session).get_predefined_shop_categories()
+
 @router.post('')
 async def create(data: CreateShopCategorySchema, session: PG_SESSION):
     return await ShopCategoryHandler(session=session).create(data=data)
 
 @router.post('/{shop_id}')
-async def init_categories(shop_id:str, session: PG_SESSION):
-    return await ShopCategoryHandler(session=session).init_categories(shop_id=shop_id)
+async def init_categories(shop_id: str, session: PG_SESSION, categories: Optional[List[str]] = Query(None)):
+    return await ShopCategoryHandler(session=session).init_categories(shop_id=shop_id, categories=categories)
 
 @router.put('')
 async def update(data: UpdateShopCategorySchema, session: PG_SESSION):

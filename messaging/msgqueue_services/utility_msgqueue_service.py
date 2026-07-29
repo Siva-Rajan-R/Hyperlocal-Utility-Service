@@ -15,11 +15,12 @@ from icecream import ic
 class MessagingQueueUtilityService:
     async def init_defaults(self, data:dict):
         shop_id=data['shop_id']
+        categories = data.get('categories') or []
         async with AsyncUtilisLocalSession() as session:
             try:
-                ic(f"Initializing defaults for shop {shop_id}...")
+                ic(f"Initializing defaults for shop {shop_id} with categories {categories}...")
                 # 1. Initialize Categories
-                await ShopCategoryService(session=session).init_categories(shop_id=shop_id)
+                await ShopCategoryService(session=session).init_categories(shop_id=shop_id, categories=categories)
                 # 2. Initialize Units
                 await ShopUnitService(session=session).init_units(shop_id=shop_id)
                 # 3. Initialize UI IDs

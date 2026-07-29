@@ -8,12 +8,12 @@ from infras.primary_db.services.shop_categories_service import ShopCategoryServi
 from infras.primary_db.services.shop_units_service import ShopUnitService
 from infras.primary_db.services.shop_ui_id_service import ShopUiIdService
 
-async def init_defaults(shop_id: str):
+async def init_defaults(shop_id: str, categories: list[str] | None = None):
     async with AsyncUtilisLocalSession() as session:
         try:
-            ic(f"Initializing defaults for shop {shop_id}...")
+            ic(f"Initializing defaults for shop {shop_id} with categories {categories}...")
             # 1. Initialize Categories
-            await ShopCategoryService(session=session).init_categories(shop_id=shop_id)
+            await ShopCategoryService(session=session).init_categories(shop_id=shop_id, categories=categories)
             # 2. Initialize Units
             await ShopUnitService(session=session).init_units(shop_id=shop_id)
             # 3. Initialize UI IDs
@@ -35,7 +35,8 @@ async def activity_logs_consumer_handler(msg: AbstractIncomingMessage):
             if success:
                 ic(f"Successfully processed activity log for {data.entity_type} ID: {data.entity_id}")
                 if data.entity_type == "Shop" and data.action == "CREATE":
-                    await init_defaults(data.shop_id)
+                    categories = payload.get("categories") or []
+                    await init_defaults(data.shop_id, categories=categories)
             else:
                 ic(f"Failed to process activity log for {data.entity_type} ID: {data.entity_id}")
                 # We could potentially raise here if we want to requeue on DB error

@@ -30,12 +30,23 @@ class ShopCategoryHandler:
         )
     
 
-    async def init_categories(self, shop_id: str):
-        res = await self.service.init_categories(shop_id=shop_id)
+    async def get_predefined_shop_categories(self):
+        res = await self.service.get_predefined_shop_categories()
+        return SuccessResponseTypDict(
+            detail=BaseResponseTypDict(
+                msg="Predefined shop categories fetched successfully",
+                status_code=200,
+                success=True
+            ),
+            data=res
+        )
+
+    async def init_categories(self, shop_id: str, categories: list[str] | None = None):
+        res = await self.service.init_categories(shop_id=shop_id, categories=categories)
         if res:
             return SuccessResponseTypDict(
                 detail=BaseResponseTypDict(
-                    msg="Shop category created successfully",
+                    msg="Shop category initialized successfully",
                     status_code=200,
                     success=True
                 )
@@ -43,8 +54,8 @@ class ShopCategoryHandler:
         raise HTTPException(
             status_code=400,
             detail=ErrorResponseTypDict(
-                msg="Error - Creating Shop Category",
-                description="Invalid data for creating shop category",
+                msg="Error - Initializing Shop Category",
+                description="Invalid data for initializing shop category",
                 success=False,
                 status_code=400
             )

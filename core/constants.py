@@ -62,6 +62,55 @@ DEFAULT_CATEGORIES = [
 ]
 
 
+SHOP_CATEGORIES_MAPPING = {
+    "GROCERY": [
+        {"name": "GROCERY", "description": "Daily grocery items"},
+        {"name": "FOOD", "description": "Food items"},
+        {"name": "BEVERAGES", "description": "Drinks and beverages"},
+        {"name": "SNACKS", "description": "Snacks and chips"},
+        {"name": "FRUITS", "description": "Fresh fruits"},
+        {"name": "VEGETABLES", "description": "Fresh vegetables"},
+        {"name": "DAIRY", "description": "Milk and dairy products"},
+        {"name": "BAKERY", "description": "Bread and bakery items"},
+        {"name": "FROZEN", "description": "Frozen foods"},
+        {"name": "HOUSEHOLD", "description": "Household essentials"},
+        {"name": "PERSONAL CARE", "description": "Personal care products"},
+        {"name": "GENERAL", "description": "General products"},
+        {"name": "OTHERS", "description": "Miscellaneous products"}
+    ],
+    "ELECTRONICS": [
+        {"name": "ELECTRONICS", "description": "Electronic items"},
+        {"name": "HOME APPLIANCES", "description": "Home appliances"},
+        {"name": "STATIONERY", "description": "Office and school supplies"},
+        {"name": "GENERAL", "description": "General products"},
+        {"name": "OTHERS", "description": "Miscellaneous products"}
+    ],
+    "CLOTHING": [
+        {"name": "CLOTHING", "description": "Garments and apparel"},
+        {"name": "PERSONAL CARE", "description": "Personal care products"},
+        {"name": "GENERAL", "description": "General products"},
+        {"name": "OTHERS", "description": "Miscellaneous products"}
+    ],
+    "PHARMACY": [
+        {"name": "HEALTH", "description": "Medicines and health products"},
+        {"name": "PERSONAL CARE", "description": "Personal care products"},
+        {"name": "GROCERY", "description": "Daily grocery items"},
+        {"name": "GENERAL", "description": "General products"},
+        {"name": "OTHERS", "description": "Miscellaneous products"}
+    ],
+    "RESTAURANT": [
+        {"name": "FOOD", "description": "Food items"},
+        {"name": "BEVERAGES", "description": "Drinks and beverages"},
+        {"name": "SNACKS", "description": "Snacks and chips"},
+        {"name": "BAKERY", "description": "Bread and bakery items"},
+        {"name": "DAIRY", "description": "Milk and dairy products"},
+        {"name": "OTHERS", "description": "Miscellaneous products"}
+    ],
+    "SUPERMARKET": DEFAULT_CATEGORIES,
+    "GENERAL": DEFAULT_CATEGORIES
+}
+
+
 DEFAULT_UNITS = [
     {
         "name": "Piece",
