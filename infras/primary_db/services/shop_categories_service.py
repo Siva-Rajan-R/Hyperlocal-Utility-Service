@@ -90,7 +90,13 @@ class ShopCategoryService:
                 cat_upper = str(shop_cat).upper().strip()
                 mapped_list = None
                 for key, val in SHOP_CATEGORIES_MAPPING.items():
-                    if key == cat_upper or key in cat_upper or cat_upper in key:
+                    key_upper = key.upper().strip()
+                    if cat_upper == key_upper or cat_upper in key_upper or key_upper in cat_upper:
+                        mapped_list = val
+                        break
+                    key_parts = [p.strip() for p in key_upper.split('/') if p.strip()]
+                    cat_parts = [p.strip() for p in cat_upper.split('/') if p.strip()]
+                    if any(cp == kp or cp in kp or kp in cp for cp in cat_parts for kp in key_parts):
                         mapped_list = val
                         break
                 if not mapped_list:
