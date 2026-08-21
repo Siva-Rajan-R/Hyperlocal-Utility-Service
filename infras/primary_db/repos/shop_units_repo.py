@@ -80,7 +80,7 @@ class ShopUnitRepo:
             )
             .offset(cursor)
             .limit(data.limit)
-            .order_by(ShopUnits.is_default.desc(), ShopUnits.name.asc())
+            .order_by(ShopUnits.is_default.desc(), ShopUnits.created_at.desc(), ShopUnits.name.asc())
         )
         return (await self.session.execute(stmt)).mappings().all()
 

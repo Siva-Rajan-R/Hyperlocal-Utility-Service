@@ -100,7 +100,7 @@ class ShopUiIdRepo:
             .where(
                 ShopUiId.shop_id == data.shop_id
             )
-            .order_by(ShopUiId.entity_type.asc())
+            .order_by(ShopUiId.created_at.desc(), ShopUiId.entity_type.asc())
             .offset(cursor)
             .limit(data.limit)
         )

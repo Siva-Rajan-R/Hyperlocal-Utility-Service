@@ -79,7 +79,7 @@ class ShopCategoryRepo:
             )
             .offset(cursor)
             .limit(data.limit)
-            .order_by(ShopCategories.is_default.desc(), ShopCategories.name.asc())
+            .order_by(ShopCategories.is_default.desc(), ShopCategories.created_at.desc(), ShopCategories.name.asc())
         )
         return (await self.session.execute(stmt)).mappings().all()
 
