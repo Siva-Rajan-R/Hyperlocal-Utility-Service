@@ -352,6 +352,10 @@ DEFAULT_UNITS = [
 
 
 
-ALLOWED_EXTENSIONS = {"image/jpeg", "image/png", "image/webp", "image/jpg"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+ALLOWED_EXTENSIONS = {
+    "image/jpeg", "image/png", "image/webp", "image/jpg",
+    "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel", "application/octet-stream", "application/json"
+}
+MAX_FILE_SIZE = 25 * 1024 * 1024  # 25 MB
 
