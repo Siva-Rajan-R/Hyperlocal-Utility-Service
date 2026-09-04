@@ -7,6 +7,8 @@ class ActivityLogReadModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     shop_id: str
     user_name: str
+    user_email: Optional[str] = ""
+    user_role: Optional[str] = ""
     service: str
     action: str
     entity_type: str

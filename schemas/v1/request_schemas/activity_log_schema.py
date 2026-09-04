@@ -5,6 +5,8 @@ from datetime import datetime
 class ActivityLogSchema(BaseModel):
     shop_id: str
     user_name: str
+    user_email: Optional[str] = ""
+    user_role: Optional[str] = ""
     service: str
     action: str
     entity_type: str
