@@ -22,8 +22,24 @@ class ShopCategoryService:
         self.msg_config = RabbitMQMessagingConfig()
 
     async def _check_if_in_use(self, shop_id: str, category_id: str) -> bool:
-        # Check if any products use this category in Inventory Service
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        # 1. First check MongoDB directly
+        try:
+            from infras.read_db.main import MONGO_CLIENT
+            inv_coll = MONGO_CLIENT["InventoryServiceReadDb"]["ProdInvCollections"]
+            doc = await inv_coll.find_one({
+                "shop_id": shop_id,
+                "$or": [
+                    {"category_id": category_id},
+                    {"category_infos.id": category_id}
+                ]
+            })
+            if doc:
+                return True
+        except Exception as e:
+            ic(f"Error checking category usage in Mongo: {e}")
+
+        # 2. Check Inventory Service via HTTP
+        async with httpx.AsyncClient(timeout=5.0) as client:
             try:
                 res = await client.get(f"{INVENTORY_SERVICE_URL}/by/shop/{shop_id}?category_id={category_id}&limit=1")
                 if res.status_code == 200:
@@ -180,12 +196,20 @@ class ShopCategoryService:
         return res
 
     async def delete(self, data: DeleteShopCategorySchema):
-        # Check if category is used
+        old_cat = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
+        if not old_cat:
+            raise ValueError(f"Category with ID '{data.id}' not found.")
+        
+        is_default = old_cat.get("is_default") if isinstance(old_cat, dict) else getattr(old_cat, "is_default", False)
+        if is_default:
+            raise ValueError("Default category cannot be deleted.")
+
+        # Check if category is used by any products
         in_use = await self._check_if_in_use(data.shop_id, data.id)
         if in_use:
-            raise Exception("Category is currently in use by products and cannot be deleted.")
+            category_name = (old_cat.get('name') if isinstance(old_cat, dict) else getattr(old_cat, 'name', None)) or data.id
+            raise ValueError(f"Cannot delete category '{category_name}' because products are associated with this category.")
 
-        old_cat = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
         res = await self.repo.delete(data=data)
         if res:
             await self._emit_event("DELETED", data.id, data.shop_id)

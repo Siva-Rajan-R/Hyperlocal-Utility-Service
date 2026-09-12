@@ -22,7 +22,24 @@ class ShopUnitService:
         self.msg_config = RabbitMQMessagingConfig()
 
     async def _check_if_in_use(self, shop_id: str, unit_id: str) -> bool:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        # 1. First check MongoDB directly
+        try:
+            from infras.read_db.main import MONGO_CLIENT
+            inv_coll = MONGO_CLIENT["InventoryServiceReadDb"]["ProdInvCollections"]
+            doc = await inv_coll.find_one({
+                "shop_id": shop_id,
+                "$or": [
+                    {"unit_id": unit_id},
+                    {"unit_infos.id": unit_id}
+                ]
+            })
+            if doc:
+                return True
+        except Exception as e:
+            ic(f"Error checking unit usage in Mongo: {e}")
+
+        # 2. Check Inventory Service via HTTP
+        async with httpx.AsyncClient(timeout=5.0) as client:
             try:
                 res = await client.get(f"{INVENTORY_SERVICE_URL}/by/shop/{shop_id}?unit_id={unit_id}&limit=1")
                 if res.status_code == 200:
@@ -164,11 +181,20 @@ class ShopUnitService:
         return res
 
     async def delete(self, data: DeleteShopUnitSchema):
+        old_unit = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
+        if not old_unit:
+            raise ValueError(f"Unit with ID '{data.id}' not found.")
+
+        is_default = old_unit.get("is_default") if isinstance(old_unit, dict) else getattr(old_unit, "is_default", False)
+        if is_default:
+            raise ValueError("Default unit cannot be deleted.")
+
+        # Check if unit is used by any products
         in_use = await self._check_if_in_use(data.shop_id, data.id)
         if in_use:
-            raise Exception("Unit is currently in use by products and cannot be deleted.")
+            unit_name = (old_unit.get('name') if isinstance(old_unit, dict) else getattr(old_unit, 'name', None)) or data.id
+            raise ValueError(f"Cannot delete unit '{unit_name}' because products are associated with this unit.")
 
-        old_unit = await self.repo.getby_id(id=data.id, shop_id=data.shop_id)
         res = await self.repo.delete(data=data)
         if res:
             await self._emit_event("DELETED", data.id, data.shop_id)
