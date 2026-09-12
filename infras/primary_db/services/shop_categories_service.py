@@ -1,3 +1,4 @@
+import os
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.service_models.base_service_model import BaseServiceModel
@@ -12,7 +13,7 @@ from core.constants import DEFAULT_CATEGORIES, SHOP_CATEGORIES_MAPPING
 from typing import Optional, List
 from icecream import ic
 
-INVENTORY_SERVICE_URL = "http://127.0.0.1:8000/inventories"
+INVENTORY_SERVICE_URL = os.getenv("INVENTORY_SERVICE_URL", "http://127.0.0.1:8004/inventories")
 
 class ShopCategoryService:
     def __init__(self, session: AsyncSession):
@@ -22,30 +23,20 @@ class ShopCategoryService:
 
     async def _check_if_in_use(self, shop_id: str, category_id: str) -> bool:
         # Check if any products use this category in Inventory Service
-        offset = 1
-        limit = 100
-        async with httpx.AsyncClient() as client:
-            while True:
-                try:
-                    # using the schema GetProductsByShopId format
-                    res = await client.get(f"{INVENTORY_SERVICE_URL}/by/shop/{shop_id}?limit={limit}&offset={offset}")
-                    if res.status_code == 200:
-                        data = res.json()
-                        products = data.get("data", [])
-                        if not products:
-                            break
-                        
-                        for p in products:
-                            if p.get("category_id") == category_id:
-                                return True
-                        
-                        if len(products) < limit:
-                            break
-                        offset += 1
-                    else:
-                        break
-                except Exception:
-                    break
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            try:
+                res = await client.get(f"{INVENTORY_SERVICE_URL}/by/shop/{shop_id}?category_id={category_id}&limit=1")
+                if res.status_code == 200:
+                    data = res.json()
+                    products = data.get("data", [])
+                    if isinstance(products, list) and len(products) > 0:
+                        return True
+                    elif isinstance(products, dict):
+                        datas = products.get("datas") or []
+                        if len(datas) > 0:
+                            return True
+            except Exception as e:
+                ic(f"Error checking category usage in inventory service: {e}")
         return False
 
     async def _emit_event(self, action: str, category_id: str, shop_id: str):
