@@ -49,6 +49,7 @@ class ActivityLogReadDbRepo:
             if query:
                 search_filter["$or"] = [
                     {"entity_id": {"$regex": query, "$options": "i"}},
+                    {"ui_id": {"$regex": query, "$options": "i"}},
                     {"entity_name": {"$regex": query, "$options": "i"}},
                     {"user_name": {"$regex": query, "$options": "i"}},
                     {"service": {"$regex": query, "$options": "i"}},

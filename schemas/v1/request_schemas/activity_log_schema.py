@@ -12,6 +12,7 @@ class ActivityLogSchema(BaseModel):
     entity_type: str
     entity_id: str
     entity_name: Optional[str] = ""
+    ui_id: Optional[str] = ""
     description: str
     changes: Optional[list[dict]] = []
 
