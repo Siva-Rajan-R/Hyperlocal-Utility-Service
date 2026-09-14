@@ -27,14 +27,17 @@ async def utility_service_lifespan(app:FastAPI):
         #     await ShopUiIdService(session=session).init_ids(shop_id="string")
         #     await ShopUnitService(session=session).init_units(shop_id="string")
         #     await ShopCategoryService(session=session).init_categories(shop_id="string")
-        asyncio.create_task(worker())
+        app.state.worker_task = asyncio.create_task(worker())
         yield
 
     except Exception as e:
         ic(f"Error : Starting utility service => {e}")
 
     finally:
-        ic("...Stoping utility Servcie...")
+        ic("...Stopping utility Service...")
+        if hasattr(app.state, "worker_task") and app.state.worker_task:
+            app.state.worker_task.cancel()
+            await asyncio.gather(app.state.worker_task, return_exceptions=True)
 
 debug=False
 openapi_url=None

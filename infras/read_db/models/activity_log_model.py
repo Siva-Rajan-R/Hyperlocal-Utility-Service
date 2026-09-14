@@ -17,4 +17,4 @@ class ActivityLogReadModel(BaseModel):
     ui_id: Optional[str] = ""
     description: str
     changes: Optional[list[dict]] = []
-    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
