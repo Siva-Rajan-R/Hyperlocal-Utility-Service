@@ -37,10 +37,15 @@ class ActivityLogReadDbRepo:
             return False
 
     @classmethod
-    async def get_logs(cls, shop_id: str, limit: int = 50, offset: int = 0, query: Optional[str] = None, from_date: Optional[str] = None, to_date: Optional[str] = None) -> list[dict]:
+    async def get_logs(cls, shop_id: str, limit: int = 50, offset: int = 0, query: Optional[str] = None, from_date: Optional[str] = None, to_date: Optional[str] = None, exclude_system: bool = False) -> list[dict]:
         try:
             from datetime import datetime
             search_filter = {"shop_id": shop_id}
+            if exclude_system:
+                search_filter["user_name"] = {
+                    "$nin": ["System", "system", "SYSTEM", None, ""],
+                    "$not": {"$regex": "^system", "$options": "i"}
+                }
             if query:
                 search_filter["$or"] = [
                     {"entity_id": {"$regex": query, "$options": "i"}},
