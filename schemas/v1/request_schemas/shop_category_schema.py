@@ -20,6 +20,6 @@ class DeleteShopCategorySchema(BaseModel):
 
 class GetShopCategorySchema(BaseModel):
     shop_id: str
-    limit: int = Field(default=10, le=100)
+    limit: int = Field(default=10, le=1000)
     offset: int = Field(default=1)
     is_active: Optional[bool] = None
