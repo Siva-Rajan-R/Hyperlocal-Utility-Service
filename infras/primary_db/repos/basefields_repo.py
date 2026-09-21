@@ -33,7 +33,7 @@ query = (
                 f.c.key,
                 case(
 
-                    # ✅ DROP-DOWN
+                    # [OK] DROP-DOWN
                     (
                         (f.c.value.op("->>")("type") == "DROP-DOWN") &
                         (conn_id != None) & (conn_id != ""),
@@ -48,7 +48,7 @@ query = (
                         )
                     ),
 
-                    # ✅ LIST-DICT
+                    # [OK] LIST-DICT
                     (
                         (f.c.value.op("->>")("type") == "LIST-DICT") &
                         (conn_id != None) & (conn_id != ""),

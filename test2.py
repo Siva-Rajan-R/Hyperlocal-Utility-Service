@@ -30,7 +30,7 @@ message = """
 
 ஆனா ஒரு பெரிய Problem இருக்கு:
 
-சாப்பிடுறாங்க → Bill Pay பண்றாங்க → போறாங்க → அப்படியே மறந்துடுறாங்க. 👻
+சாப்பிடுறாங்க -> Bill Pay பண்றாங்க -> போறாங்க -> அப்படியே மறந்துடுறாங்க. 👻
 
 அந்த Customers-ஐ உங்கள் Restaurant-க்கு திரும்பவும் வர வைக்க முடிஞ்சா? 🔥
 
@@ -80,7 +80,7 @@ async def main():
         # First time: scan QR manually
         await page.wait_for_timeout(15000)
 
-        print("✅ WhatsApp Web loaded")
+        print("[OK] WhatsApp Web loaded")
 
         for _, row in df.iterrows():
 
@@ -92,7 +92,7 @@ async def main():
             restaurant = str(row["Business Name"]).strip()
 
             if phone in SKIP_NUMBERS:
-                print(f"⏭️ SKIPPED → {restaurant} | {phone}")
+                print(f"⏭️ SKIPPED -> {restaurant} | {phone}")
                 continue
 
             text = message.format(
@@ -100,7 +100,7 @@ async def main():
             )
 
             print(
-                f"📤 Sending → "
+                f"📤 Sending -> "
                 f"{restaurant} | {phone}"
             )
 
@@ -121,7 +121,7 @@ async def main():
             await page.keyboard.press("Enter")
 
             print(
-                f"✅ Sent → "
+                f"[OK] Sent -> "
                 f"{restaurant} | {phone}"
             )
 

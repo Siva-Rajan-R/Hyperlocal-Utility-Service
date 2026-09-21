@@ -36,7 +36,7 @@ query = (
                 cf.c.key,
                 case(
 
-                    # ✅ DROP-DOWN
+                    # [OK] DROP-DOWN
                     (
                         (cf.c.value.op("->>")("type") == "DROP-DOWN") &
                         (cf_conn_id != None) & (cf_conn_id != ""),
@@ -51,7 +51,7 @@ query = (
                         )
                     ),
 
-                    # ✅ LIST-DICT
+                    # [OK] LIST-DICT
                     (
                         (cf.c.value.op("->>")("type") == "LIST-DICT") &
                         (cf_conn_id != None) & (cf_conn_id != ""),
@@ -78,7 +78,7 @@ query = (
     # explode JSON
     .outerjoin(cf, true())
 
-    # ✅ dropdown join (shop safe)
+    # [OK] dropdown join (shop safe)
     .outerjoin(
         CustomDropdown,
         (cf_conn_id == CustomDropdown.id) &
